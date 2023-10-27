@@ -400,3 +400,5 @@ FodyWeavers.xsd
 */obj
 **/bin/Debug/
 **/bin/Release/
+Debug/
+Release/
