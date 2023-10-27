@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 */Debug
 */obj
+**/bin/Debug/
+**/bin/Release/
