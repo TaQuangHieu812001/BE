@@ -8,6 +8,8 @@ namespace FunitureApp.Models.ResponeModel
     public class ProductResponse
     {
         public Product Product { get; set; }
-        public ProductAttribute ProductAttribute { get; set; }
+        public Decimal AvgStar { get; set; }
+        public Decimal TotalComment { get; set; }
+        public List<ProductAttribute> ProductAttribute { get; set; }
     }
 }

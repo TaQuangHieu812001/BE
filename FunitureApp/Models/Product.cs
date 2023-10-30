@@ -16,6 +16,7 @@ namespace FunitureApp.Models
         public string Type { get; set; }
         public int Quantity { get; set; }
         public DateTime? Create_at { get; set; }
+        public string ImageList { get; set; } 
     }
 
 }

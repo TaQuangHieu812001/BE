@@ -1,5 +1,6 @@
 ﻿using FunitureApp.Data;
 using FunitureApp.Models;
+using FunitureApp.untils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -34,7 +35,8 @@ namespace FunitureApp.Controllers
                     var category = categories[i];
                     if (!string.IsNullOrEmpty(category.Image))
                     {
-                        string baseUrl = "http://192.168.1.115:5000";
+                        string baseUrl = StringHelper.BaseUrl;
+
                         category.Image = baseUrl + category.Image;
                     }
                 }

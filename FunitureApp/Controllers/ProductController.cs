@@ -1,6 +1,7 @@
 ﻿using FunitureApp.Data;
 using FunitureApp.Models;
 using FunitureApp.Models.ResponeModel;
+using FunitureApp.untils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -25,31 +26,62 @@ namespace FunitureApp.Controllers
         }
         // GET: api/products
         [HttpGet]
-        public IActionResult GetProducts()
+        public IActionResult GetProducts(bool? isHome, int? cateId, string status,int? priceFrom,int? priceTo,string name)
         {
             try
             {
-                 var products = _productDbContext.Products.ToList();
+                 var productsQuery = _productDbContext.Products.Where(e=>e.Quantity>0);
+                if (isHome==true)
+                {
+                    productsQuery = productsQuery.OrderByDescending(e => e.Id).Take(10);
+                }
+                if (cateId != null)
+                {
+                    productsQuery = productsQuery.Where(e => e.Category_id == cateId);
+                }
+                if(!String.IsNullOrEmpty(status))
+                {
+                    productsQuery = productsQuery.Where(e => e.Status == status);
+                }
+                if (!String.IsNullOrEmpty(name))
+                {
+                    productsQuery = productsQuery.Where(e => e.NameProduct.Contains(name));
+                }
+                var products = productsQuery.ToList();
                  var productRespone = new List<ProductResponse>();
                 int productCount = products.Count;
                 for(int j = 0; j < productCount; j++)
                 {
                     var product = products[j];
+                    string baseUrl = StringHelper.BaseUrl;
                     if (!string.IsNullOrEmpty(product.Image))
                     {
-                        string baseUrl = "http://192.168.1.115:5000";
+                        
                         product.Image = baseUrl + product.Image;
+                    }
+                    if (!string.IsNullOrEmpty(product.ImageList))
+                    {
+                        var imgs = product.ImageList.Split(",");
+                        for(int i= 0; i < imgs.Count(); i++)
+                        {
+                            imgs[i] = baseUrl + imgs[i];
+                        }
+                        product.ImageList = string.Join(",", imgs);
                     }
                 }
                 for (int i = 0; i < products.Count; i++)
                 {
-                        var p = new ProductResponse();
+                    var p = new ProductResponse();
                     var id =  products[i].Id;
-               var productAttribute = _productDbContext.ProductAttributes.Where(u => u.Product_id == id).FirstOrDefault();
+                    var productAttribute = _productDbContext.ProductAttributes.Where(u => u.Product_id == id);
+                    if (priceFrom != null)
+                    {
+                        productAttribute = productAttribute.Where(w => w.Price >= priceFrom && w.Price <= priceTo);
+                    }
                     p.Product = products[i];
-                    p.ProductAttribute = productAttribute;
+                    p.ProductAttribute = productAttribute.ToList();
                     productRespone.Add(p);
-            }
+                }   
             return Ok(
                            new ApiResponse
                            {
@@ -70,16 +102,43 @@ namespace FunitureApp.Controllers
             try
             {
                 var product = _productDbContext.Products.FirstOrDefault(p => p.Id == id);
+
                 if (product == null)
                 {
                     return NotFound("Không tìm thấy sản phẩm");
                 }
+                string baseUrl = StringHelper.BaseUrl;
+                if (!string.IsNullOrEmpty(product.Image))
+                {
+
+                    product.Image = baseUrl + product.Image;
+                }
+                if (!string.IsNullOrEmpty(product.ImageList))
+                {
+                    var imgs = product.ImageList.Split(",");
+                    for (int i = 0; i < imgs.Count(); i++)
+                    {
+                        imgs[i] = baseUrl + imgs[i];
+                    }
+                    product.ImageList = string.Join(",", imgs);
+                }
+                var p = new ProductResponse();
+                var productAttribute = _productDbContext.ProductAttributes.Where(u => u.Product_id == id);
+               
+                p.Product = product;
+                p.ProductAttribute = productAttribute.ToList();
+                if (_productDbContext.Comments.Where(c => c.Product_id == id).Count() > 0)
+                {
+                    p.AvgStar = (decimal)_productDbContext.Comments.Where(c => c.Product_id == id).Average(a => a.Star_rate);
+                    p.TotalComment = _productDbContext.Comments.Where(c => c.Product_id == id).Count();
+                }
+                else { p.AvgStar = 0; p.TotalComment = 0; }
                 return Ok(
                         new ApiResponse
                         {
                             Success = true,
                              Message = "",
-                             Data = product,
+                             Data = p,
                         }
                     );
             }catch(Exception err)
@@ -90,33 +149,7 @@ namespace FunitureApp.Controllers
 
         }
         //
-        [HttpGet("search-by-type")]
-        public IActionResult SearchProductsByType([FromQuery] int categoryId)
-        {
-            try
-            {
-                var products = _productDbContext.Products
-                    .Where(p => p.Category_id == categoryId)
-                    .ToList();
-
-                var productResponse = products.Select(product => new ProductResponse
-                {
-                    Product = product,
-                    ProductAttribute = _productDbContext.ProductAttributes.FirstOrDefault(pa => pa.Product_id == product.Id)
-                }).ToList();
-
-                return Ok(new ApiResponse
-                {
-                    Success = true,
-                    Message = "",
-                    Data = productResponse,
-                });
-            }
-            catch (Exception err)
-            {
-                return StatusCode(500, "Lỗi máy chủ: " + err.Message);
-            }
-        }
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveProduct(int id)
         {

@@ -1,5 +1,8 @@
 ﻿using FunitureApp.Data;
 using FunitureApp.Models;
+using FunitureApp.Models.RequestModel;
+using FunitureApp.Models.ResponeModel;
+using FunitureApp.untils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +15,7 @@ namespace FunitureApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [JwtAuthorize]
     public class UserOrderController : Controller
     {
         private readonly DbFunitureContext _userOrderDbContext;
@@ -23,28 +27,52 @@ namespace FunitureApp.Controllers
             _userOrderDbContext = new DbFunitureContext();
             _configuration = configuration;
         }
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserOrders(int userId)
+        [HttpGet]
+        public async Task<IActionResult> GetUserOrders(string status)
         {
             try
             {
-                var userOrder = _userOrderDbContext.UserOrders.Where(uo => uo.User_id == userId).ToList();
-                var userExists = _userOrderDbContext.UserOrders.SingleOrDefault(u => u.Id == userId);
-                if (userExists == null)
+                var authUserId = Int32.Parse(HttpContext.User.Claims.Where(u => u.Type == "Id").FirstOrDefault().Value);
+                var userOrder = _userOrderDbContext.UserOrders.Where(uo => uo.User_id == authUserId && uo.Status==status).ToList();
+                var response = new List<OrderResponse>();
+                
+               foreach(var o in userOrder)
                 {
-                    return NotFound("Người dùng không tồn tại.");
-                }
-                if (userOrder.Count == 0)
-                {
-                    return NotFound("Không tìm thấy đơn hàng cho người dùng này.");
-                }
+                    var orderRes = new OrderResponse()
+                    {
+                        order = o,
+                        orderItems = new List<OrderItemResponse>()
+                    };
+                    var orderItem = _userOrderDbContext.UserOrderItems.AsNoTracking().Where(i => i.User_order_id == o.Id).ToList();
+                    foreach(var item in orderItem)
+                    {
+                        var productAttr = _userOrderDbContext.ProductAttributes.AsNoTracking().Where(p => p.Id == item.Product_attr_id).FirstOrDefault();
+                        var product = _userOrderDbContext.Products.AsNoTracking().Where(p => p.Id == productAttr.Product_id).FirstOrDefault();
+                        product.Image = StringHelper.BaseUrl + product.Image;
+                        var productImages = new List<string>();
+                        if (!string.IsNullOrEmpty(product.ImageList))
+                        {
+                            foreach (var img in product.ImageList.Split(","))
+                            {
+                                productImages.Add(StringHelper.BaseUrl + img);
+                            }
+                            product.ImageList = string.Join(",", productImages);
+                        }
+                        orderRes.orderItems.Add(new OrderItemResponse()
 
+                        {
+                            orderItem = item,
+                            product = product,
+                            productAttribute = productAttr
+                        });
+                    }
+                    response.Add(orderRes);
+                }
 
                 return Ok(new ApiResponse
                 {
                     Success = true,
-                    Data = userOrder,
-
+                    Data = response,
                 });
             } catch (Exception err)
             {
@@ -53,15 +81,66 @@ namespace FunitureApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUserOrders(UserOrder userOrder)
+        public async Task<IActionResult> CreateUserOrders(OrderRequest userOrder)
         {
             try
             {
-                userOrder.Create_at = DateTime.Now; // Gán thời gian tạo đơn hàng
-                _userOrderDbContext.UserOrders.Add(userOrder);
-                await _userOrderDbContext.SaveChangesAsync();
+                var authUserId = Int32.Parse(HttpContext.User.Claims.Where(u => u.Type == "Id").FirstOrDefault().Value);
 
-                return Ok("Đơn hàng đã được tạo thành công.");
+                foreach (var o in userOrder.orderItem)
+                {
+                    var product = _userOrderDbContext.Products.Where(p => p.Id == o.product.Id).FirstOrDefault();
+                    if (product != null)
+                    {
+                        if (product.Quantity < o.count)
+                        {
+                            return Ok(new ApiResponse
+                            {
+                                Success = false,
+                                Message = "Sản phẩm đã hết!"
+                            });
+                        }
+                        else {
+                            product.Quantity -= o.count;
+                            _userOrderDbContext.SaveChanges();
+                        }
+                    }
+
+                }
+
+
+                var newOrder = new UserOrder()
+                {
+                    Delivery_free = (int)userOrder.deliveryFee,
+                    PaymentStatus = 0,
+                    Delivery_method_id = 0,
+                    PaymentType = userOrder.paymentType,
+                    ShipId = userOrder.shipId,
+                    Status = "processing",
+                    Total = userOrder.total,
+                    User_id = authUserId,Create_at=DateTime.Now,
+                    Order_no=DateTime.Now.Ticks.ToString()
+                };
+                _userOrderDbContext.UserOrders.Add(newOrder);
+                _userOrderDbContext.SaveChanges();
+                foreach(var o in userOrder.orderItem)
+                {
+                    _userOrderDbContext.UserOrderItems.Add(new UserOrderItem
+                    {
+                        Product_attr_id = o.productAttribute.Id,
+                         Quantity=o.count,
+                          Total=(decimal)o.productAttribute.Price*o.count,
+                           User_order_id=newOrder.Id
+                           
+                    });
+
+                }
+                _userOrderDbContext.SaveChanges();
+                return Ok(new ApiResponse
+                {
+                    Success = true,
+                    Data = null,
+                });
             }
             catch (Exception ex)
             {

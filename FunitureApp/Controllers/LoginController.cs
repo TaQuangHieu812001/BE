@@ -1,6 +1,7 @@
 ﻿using FunitureApp.Data;
 using FunitureApp.Models;
 using FunitureApp.Models.RequestModels;
+using FunitureApp.Models.ResponeModel;
 using FunitureApp.untils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,13 @@ namespace FunitureApp.Controllers
                 u.Password == userLoginRequest.Password).FirstOrDefault();
                 if (!isValidateEmail.IsValidEmail(userLoginRequest.Email))
                 {
-                    return BadRequest("Địa chỉ Email không hợp lệ");
+                    return Ok(
+                               new ApiResponse
+                               {
+                                   Success = false,
+                                   Message = "Địa chỉ Email không hợp lệ",
+                               }
+                        );
                 }
      
                 if (user == null)//không đun
@@ -58,12 +65,30 @@ namespace FunitureApp.Controllers
                 //
                 if (user.Password != userLoginRequest.Password)
                 {
-                    return Unauthorized("Mật khẩu không đúng");
+                    return Ok(
+                               new ApiResponse
+                               {
+                                   Success = false,
+                                   Message = "Mật khẩu không đúng",
+                               }
+                        );
+                   
                 }
+                var userResult = new LoginResponse()
+                {
+                    CreateBy = user.CreateBy,
+                    CreateOn = user.CreateOn,
+                    Email = user.Email,
+                    Id = user.Id,
+                    ModifiedOn = user.ModifiedOn,
+                    ModifiedBy = user.ModifiedBy,
+                    token = _generatorToken.GenerateToken(user),
+                    UserName = user.UserName
+                };
                 return Ok(new ApiResponse { 
                     Success=true,
                     Message = "Login success",
-                    Data = _generatorToken.GenerateToken(user),
+                    Data = userResult,
 
                 });
             }
