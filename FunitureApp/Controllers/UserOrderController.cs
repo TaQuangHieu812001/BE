@@ -3,6 +3,7 @@ using FunitureApp.Models;
 using FunitureApp.Models.RequestModel;
 using FunitureApp.Models.ResponeModel;
 using FunitureApp.untils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,24 +11,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace FunitureApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [JwtAuthorize]
+    
     public class UserOrderController : Controller
     {
         private readonly DbFunitureContext _userOrderDbContext;
         private readonly IConfiguration _configuration;
-
-
+        private readonly string CheckSumKey = "rf8whwaejNhJiQG2bsFubSzccfRc/iRYyGUn6SPmT6y/L7A2XABbu9y4GvCoSTOTpvJykFi6b1G0crU8et2O0Q==";
         public UserOrderController(IConfiguration configuration)
         {
             _userOrderDbContext = new DbFunitureContext();
             _configuration = configuration;
         }
+
         [HttpGet]
+        [JwtAuthorize]
         public async Task<IActionResult> GetUserOrders(string status)
         {
             try
@@ -81,6 +84,7 @@ namespace FunitureApp.Controllers
         }
 
         [HttpPost]
+        [JwtAuthorize]
         public async Task<IActionResult> CreateUserOrders(OrderRequest userOrder)
         {
             try
@@ -136,10 +140,12 @@ namespace FunitureApp.Controllers
 
                 }
                 _userOrderDbContext.SaveChanges();
+               var strCallBack= HttpUtility.HtmlEncode(StringHelper.BaseUrl + "/api/UserOrder/payment-callback");
+                string paymentUrl = "http://192.168.1.11:80?callback="+ strCallBack + "&amount=" + userOrder.total.ToString()+ "&transId="+DateTime.Now.ToString("HHmmss")+"_"+newOrder.Id;
                 return Ok(new ApiResponse
                 {
                     Success = true,
-                    Data = null,
+                    Data = userOrder.paymentType==0?paymentUrl: null,
                 });
             }
             catch (Exception ex)
@@ -148,7 +154,10 @@ namespace FunitureApp.Controllers
             }
         }
 
+        
+
         [HttpPut("{orderId}")]
+        [JwtAuthorize]
         public async Task<IActionResult>UpdateUserOrder(int orderId, UserOrder updatedOrder)
         {
           try
@@ -184,6 +193,7 @@ namespace FunitureApp.Controllers
 
 
         [HttpDelete("{orderId}")]
+        [JwtAuthorize]
         public async Task<IActionResult>RemoveUserOrder(int orderId)
         {
             try
@@ -205,6 +215,40 @@ namespace FunitureApp.Controllers
                 return StatusCode(500, "Lỗi trong quá trình xóa đơn hàng " + err.Message);
             }
         }
+
+        [JwtAuthorize(Type ="anonymous")]
+        [HttpGet("payment-callback")]
+        public async Task<IActionResult> CallBackPayment(string merTrxId,string resultCd,string resultMsg,string amount,string timeStamp,string trxId,string merId,string merchantToken)
+        {
+            try
+            {
+                
+                var hash = StringHelper.sha256(resultCd + timeStamp + merTrxId + trxId + merId + amount + CheckSumKey);
+                if (hash == merchantToken)
+                {
+                    if(resultCd== "00_000")
+                    {
+                        var orderId = Int32.Parse(merTrxId.Split("_")[1]);
+                        var order = await _userOrderDbContext.UserOrders.Where(u => u.Id == orderId).FirstOrDefaultAsync();
+                        if (order != null)
+                        {
+                            order.PaymentStatus = 1;
+                            _userOrderDbContext.SaveChanges();
+                            return Redirect("app://192.168.1.11:5123/");
+                        }
+                        else return Ok(new ApiResponse(false, "Không tìm thấy đơn hàng", null));
+                    }
+                   else return Ok(new ApiResponse(false, "Lỗi giao dich "+ resultMsg, null));
+
+                }
+                else return Ok(new ApiResponse(false, "Lỗi checksum ", null));
+                
+            }catch(Exception e) 
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
     }
 
 }

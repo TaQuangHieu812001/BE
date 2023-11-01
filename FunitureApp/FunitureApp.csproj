@@ -22,6 +22,10 @@
     <Folder Include="Services\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\icons\" />
+    <Folder Include="wwwroot\.well-known\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="wwwroot\.well-known\" />
+  </ItemGroup>
 </Project>

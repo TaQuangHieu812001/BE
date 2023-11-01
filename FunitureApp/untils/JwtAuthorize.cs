@@ -9,9 +9,14 @@ namespace FunitureApp.untils
 {
     public class JwtAuthorize : Attribute, IAuthorizationFilter
     {
+        public string Type { get; set; }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             bool IsAuthenticated = context.HttpContext.User.Identity.IsAuthenticated;
+            if(Type== "anonymous")
+            {
+                return;
+            }
             if (!IsAuthenticated)
             {
                 context.Result = new JsonResult( new ApiResponse(false,"UnAuthorize",null));
