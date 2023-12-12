@@ -49,11 +49,13 @@ namespace FunitureApp.Controllers
                 {
                     return BadRequest("Người dùng đã tồn tại");
                 }
+                 var md5Hash = new MD5Hash();
+                    
                 var newUser = new User()
                 {
                     UserName = registrationRequest.UserName,
                     Email = registrationRequest.Email,
-                    Password = registrationRequest.Password,
+                    Password = md5Hash.Hash(registrationRequest.Password),
                 };
                 await _userDbContext.Users.AddAsync(newUser);
                 await _userDbContext.SaveChangesAsync();
