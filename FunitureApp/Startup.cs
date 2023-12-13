@@ -67,8 +67,11 @@ namespace FunitureApp
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FunitureAppv1"));
             }
-
-
+            else
+            {
+                
+            }
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
