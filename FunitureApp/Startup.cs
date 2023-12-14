@@ -33,10 +33,11 @@ namespace FunitureApp
         {
             var secretKey = Configuration["AppSettings:SecretKey"];
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+            services.AddMvc();
             services.Configure<AppSetting>(Configuration.GetSection("AppSettings"));
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-               
+
          .AddJwtBearer(opt =>
          {
              opt.TokenValidationParameters = new TokenValidationParameters
@@ -71,17 +72,17 @@ namespace FunitureApp
             }
             else
             {
-                
+
             }
-            
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseStaticFiles();
             app.UseAuthentication();
-             
+
             app.UseAuthorization();
-         
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

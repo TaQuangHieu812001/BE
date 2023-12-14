@@ -9,7 +9,7 @@
 <h4>Product</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -20,12 +20,15 @@
             </div>
             <div class="form-group">
                 <label asp-for="Category_id" class="control-label"></label>
-                <input asp-for="Category_id" class="form-control" />
+                <select id="optCategories" asp-for="Category_id" class="form-control">
+                </select>
                 <span asp-validation-for="Category_id" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
+
+                <input asp-for="Image" class="form-control d-none" id="txtThumb" />
+                <img src="@Model.Image" class="img-thumbnail" style="width: 100px; height: 100px;" />
+                <input type="file" id="thumpNail">
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -54,21 +57,163 @@
                 <span asp-validation-for="Create_at" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ImageList" class="control-label"></label>
-                <input asp-for="ImageList" class="form-control" />
+
+                <input asp-for="ImageList" class="form-control d-none" id="txtMultiple" />
                 <span asp-validation-for="ImageList" class="text-danger"></span>
+                @{
+                    if (Model.ImageList != null)
+                        foreach (var image in @Model.ImageList.Split(","))
+                        {
+                            <img src="@image" class="img-thumbnail" style="width: 100px; height: 100px;" />
+                        }
+                }
+                <input type="file" multiple id="thumbMultiple" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
-</div>
+    <div class="col-md-5 ">
+        <div class="d-flex justify-content-between flex-row">
+            <h4>Thuộc tính</h4>
+            <div class="btn btn-success" id="btnAdd">Add new</div>
+        </div>
+        <div>
+            <table class="table">
+                <tr>
+                    <th>id</th>
+                    <th>Price</th>
+                    <th>Color</th>
+                    <th>Hex Color</th>
 
+                </tr>
+                <tbody id="tableAttributes">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="modal fade" data-bs-backdrop="static" id="modalAssets" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content overflow-hidden">
+                    <div class="modal-body p-2">
+                        <h5>
+                            Thêm thuộc tính
+                        </h5>
+                        <div class="form-group">
+                            <label class="control-label">
+                                Price
+                            </label>
+                            <input type="number" class="form-control" id="txtPrice" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">
+                                Color
+                            </label>
+                            <input type="text" class="form-control" id="txtColor" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">
+                                HexColor
+                            </label>
+                            <input type="color" class="" id="txtHexColor" />
+                        </div>
+                        <div class="btn btn-success" id="btnSaveAttribute">
+                            Lưu
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        async function UploadImage(targetType, target) {
+            var fileInput = document.getElementById(target);
+            var files = fileInput.files;
+            var data = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                data.append("files", files[i]);
+            }
+
+            var resUpload = await axios.post("/admin/products/UploadAssets", data)
+            console.log(resUpload);
+            if (resUpload.status == 200) {
+                if (targetType == 'multiple') {
+                    document.getElementById("txtMultiple").value = resUpload.data.join(',');
+                }
+                else
+                    document.getElementById("txtThumb").value = resUpload.data[0];
+            }
+        }
+        async function getAttributes() {
+            var resAttributes = await axios.get("/admin/products/getAttributes?id=@Model.Id");
+            console.log(resAttributes);
+            document.getElementById('tableAttributes').innerHTML = '';
+            for (let resAttribute in resAttributes.data) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `
+                                                                                        <td>${resAttributes.data[resAttribute].id}</td>
+                                                                                        <td>${resAttributes.data[resAttribute].price}</td>
+                                                                                        <td>${resAttributes.data[resAttribute].color}</td>
+                                                                                        <td><div style="width:20px;height:20px; background-color:${resAttributes.data[resAttribute].hexColor}"></div> </td>
+
+                                                                                        <td>
+
+                                                                                            <button type="button" class="btn btn-sm btn-danger" onclick="deleteAttribute(${resAttributes.data[resAttribute].id})">Delete</button>
+                                                                                        </td>
+                                                                                    `;
+                document.getElementById('tableAttributes').appendChild(tr);
+            }
+        }
+        async function SaveAttribute() {
+            var data = new FormData();
+            data.append("price", document.getElementById("txtPrice").value);
+            data.append("color", document.getElementById("txtColor").value);
+            data.append("hexColor", document.getElementById("txtHexColor").value);
+            data.append("productId", "@Model.Id");
+            var resUpload = await axios.post("/admin/products/SaveAttribute", data)
+            console.log(resUpload);
+            if (resUpload.status == 200) {
+                document.getElementById("modalAssets").style.display = "none";
+                document.getElementById("txtPrice").value = "";
+                document.getElementById("txtColor").value = "";
+                document.getElementById("txtHexColor").value = "";
+                getAttributes();
+            }
+        }
+        async function getCategory() {
+            var resCategory = await axios.get("/admin/products/getCategory?id=@Model.Id");
+            console.log(resCategory);
+
+            for (let cate in resCategory.data) {
+                var option = document.createElement('option');
+                option.value = resCategory.data[cate].id;
+                option.innerHTML = resCategory.data[cate].name;
+                document.getElementById('optCategories').appendChild(option);
+            }
+        }
+        $(function () {
+            $("#thumpNail").change(() => UploadImage('', 'thumpNail'));
+            $("#thumbMultiple").change(() => UploadImage('multiple', 'thumbMultiple'));
+            $("#btnAdd").click(() => {
+                $('#modalAssets').modal('show')
+            })
+            $("#btnSaveAttribute").click(() => {
+                $('#modalAssets').modal('hide');
+                SaveAttribute();
+            })
+            getAttributes();
+            getCategory();
+        })
+
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

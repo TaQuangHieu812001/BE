@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FunitureApp.Data;
 using FunitureApp.Models;
-
+using System.IO;
+using Microsoft.AspNetCore.Http;
 namespace FunitureApp.Areas.admin.Controllers
 {
     [Area("admin")]
@@ -150,5 +151,85 @@ namespace FunitureApp.Areas.admin.Controllers
         {
             return _context.Products.Any(e => e.Id == id);
         }
+        [HttpPost]
+        public async Task<IActionResult> UploadAssets([FromForm] List<IFormFile> files)
+
+        {
+            try
+            {
+                if (files.Any())
+                    if (files[0].Length > 0)
+                    {
+                        var result = new List<string>();
+                        foreach (var file in files)
+                        {
+                            var ext = Path.GetExtension(file.FileName);
+                            var absoluteDir = Directory.GetCurrentDirectory();
+                            var hostName = Request.Host;
+                            var relativeDir = "/images/" +
+                        Guid.NewGuid() + Path.GetExtension(file.FileName);
+                            var filePath = absoluteDir + "/wwwroot" + relativeDir;
+                            //savefile
+                            //var resultf = await _fileService.SaveFile(filePath, files[0], relativeDir);
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+                            result.Add(relativeDir);
+                        }
+                        return Ok(result);
+                    }
+                return StatusCode(400);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(500);
+            }
+
+
+
+        }
+
+        public async Task<IActionResult> GetAttributes(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.ProductAttributes.Where(p => p.Product_id == id).ToListAsync();
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(product);
+        }
+        [HttpPost]
+        public async Task<IActionResult> SaveAttribute(int price, string color, string hexColor, int? productId)
+        {
+            if (productId == null)
+            {
+                return NotFound();
+            }
+            _context.ProductAttributes.Add(new ProductAttribute()
+            {
+                Color = color,
+                HexColor = hexColor,
+                Create_at = DateTime.Now,
+                Price = price,
+                Product_id = productId ?? 0
+            });
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        public async Task<IActionResult> GetCategory(int? productId)
+        {
+            var category = await _context.Categories.ToListAsync();
+            return Ok(category);
+        }
+
+
+
     }
 }

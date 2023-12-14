@@ -13,12 +13,12 @@ namespace FunitureApp.Data
         public DbSet<UserOrderItem> UserOrderItems { get; set; }
         public DbSet<UserAddress> UserAddresses { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductAttribute> ProductAttributes{get;set;}
+        public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet <Favorites> Favorites { get; set; }
+        public DbSet<Favorites> Favorites { get; set; }
         public DbSet<Comment> Comments { get; set; }
-       
-        private const string connectionString = "server=localhost;database=funitureapp;user=root;password=root;";
+
+        private const string connectionString = "server=localhost;database=funitureapp;user=root;password=;";
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -51,7 +51,7 @@ namespace FunitureApp.Data
             );
             modelBuilder.Entity<Favorites>(entity =>
                 entity.ToTable("favorite", "funitureapp")
-            
+
             );
             modelBuilder.Entity<UserOrder>(entity =>
                entity.ToTable("user_order", "funitureapp")
