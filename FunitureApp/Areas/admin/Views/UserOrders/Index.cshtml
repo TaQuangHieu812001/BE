@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FunitureApp.Models.UserOrder>
+﻿@model IEnumerable<FunitureApp.Areas.admin.Models.OrderView>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,77 +13,70 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Order_no)
+                @Html.DisplayNameFor(model => model.Order.Order_no)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User_id)
+                @Html.DisplayNameFor(model => model.User.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Total)
+                @Html.DisplayNameFor(model => model.Order.Total)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                @Html.DisplayNameFor(model => model.Order.Status)
+            </th>
+         
+            <th>
+                @Html.DisplayNameFor(model => model.Order.Delivery_free)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Delivery_method_id)
+                @Html.DisplayNameFor(model => model.Order.Create_at)
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.Order.PaymentStatus)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Delivery_free)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Create_at)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ShipId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PaymentStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PaymentType)
+                @Html.DisplayNameFor(model => model.Order.PaymentType)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Order_no)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User_id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Total)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Delivery_method_id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Delivery_free)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Create_at)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShipId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentType)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.Order_no)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.Total)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.Status)
+                </td>
+               
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.Delivery_free)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.Create_at)
+                </td>
+               
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.PaymentStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.PaymentType)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Order.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Order.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Order.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

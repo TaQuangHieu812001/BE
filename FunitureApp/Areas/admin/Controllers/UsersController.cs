@@ -15,14 +15,15 @@ namespace FunitureApp.Areas.admin.Controllers
     {
         private readonly DbFunitureContext _context;
 
-        public UsersController(DbFunitureContext context)
+        public UsersController()
         {
-            _context = context;
+            _context = new DbFunitureContext();
         }
 
         // GET: admin/Users
         public async Task<IActionResult> Index()
         {
+
             return View(await _context.Users.ToListAsync());
         }
 

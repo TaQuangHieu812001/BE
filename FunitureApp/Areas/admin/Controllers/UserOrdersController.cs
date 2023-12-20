@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FunitureApp.Data;
 using FunitureApp.Models;
+using FunitureApp.Models.ResponeModel;
+using FunitureApp.Areas.admin.Models;
 
 namespace FunitureApp.Areas.admin.Controllers
 {
@@ -23,7 +25,23 @@ namespace FunitureApp.Areas.admin.Controllers
         // GET: admin/UserOrders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.UserOrders.ToListAsync());
+            var userOrder = await _context.UserOrders.ToListAsync();
+            var response = new List<OrderView>();
+
+            foreach (var o in userOrder)
+            {
+                var orderRes = new OrderView()
+                {
+                    Order = o,
+                    User = _context.Users.Find(o.User_id)
+                };
+                
+                
+                response.Add(orderRes);
+            }
+
+
+            return View(response);
         }
 
         // GET: admin/UserOrders/Details/5
