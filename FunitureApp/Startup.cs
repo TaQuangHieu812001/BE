@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -33,9 +34,17 @@ namespace FunitureApp
         {
             var secretKey = Configuration["AppSettings:SecretKey"];
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromHours(8);
+                //  options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             services.AddMvc();
             services.Configure<AppSetting>(Configuration.GetSection("AppSettings"));
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
          .AddJwtBearer(opt =>
@@ -79,8 +88,8 @@ namespace FunitureApp
 
             app.UseRouting();
             app.UseStaticFiles();
-            app.UseAuthentication();
-
+            app.UseCookiePolicy();
+            app.UseSession();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

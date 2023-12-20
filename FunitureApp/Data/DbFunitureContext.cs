@@ -18,7 +18,7 @@ namespace FunitureApp.Data
         public DbSet<Favorites> Favorites { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
-        private const string connectionString = "server=localhost;database=funitureapp;user=root;password=root;";
+        private const string connectionString = "server=localhost;database=funitureapp;user=root;password=;";
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

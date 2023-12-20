@@ -9,6 +9,7 @@ using FunitureApp.Data;
 using FunitureApp.Models;
 using FunitureApp.Models.ResponeModel;
 using FunitureApp.Areas.admin.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace FunitureApp.Areas.admin.Controllers
 {
@@ -16,15 +17,18 @@ namespace FunitureApp.Areas.admin.Controllers
     public class UserOrdersController : Controller
     {
         private readonly DbFunitureContext _context;
-
-        public UserOrdersController()
+        private readonly IHttpContextAccessor _contextAccessor;
+        public UserOrdersController(IHttpContextAccessor httpContext)
         {
+            _contextAccessor = httpContext;
             _context = new DbFunitureContext();
         }
 
         // GET: admin/UserOrders
         public async Task<IActionResult> Index()
         {
+            if (_contextAccessor.HttpContext.Session.GetString("admin") != "admin")
+                return View("~/Areas/admin/Views/Login.cshtml");
             var userOrder = await _context.UserOrders.ToListAsync();
             var response = new List<OrderView>();
 

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FunitureApp.Data;
 using FunitureApp.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace FunitureApp.Areas.admin.Controllers
 {
@@ -14,15 +15,18 @@ namespace FunitureApp.Areas.admin.Controllers
     public class CategoriesController : Controller
     {
         private readonly DbFunitureContext _context;
-
-        public CategoriesController()
+        private readonly IHttpContextAccessor _contextAccessor;
+        public CategoriesController(IHttpContextAccessor httpContext)
         {
+            _contextAccessor = httpContext;
             _context = new DbFunitureContext();
         }
 
         // GET: admin/Categories
         public async Task<IActionResult> Index()
         {
+            if (_contextAccessor.HttpContext.Session.GetString("admin") != "admin")
+                return View("~/Areas/admin/Views/Login.cshtml");
             return View(await _context.Categories.ToListAsync());
         }
 

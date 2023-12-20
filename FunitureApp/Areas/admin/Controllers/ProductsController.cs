@@ -15,15 +15,18 @@ namespace FunitureApp.Areas.admin.Controllers
     public class ProductsController : Controller
     {
         private readonly DbFunitureContext _context;
-
-        public ProductsController()
+        private readonly IHttpContextAccessor _contextAccessor;
+        public ProductsController(IHttpContextAccessor httpContext)
         {
+            _contextAccessor = httpContext;
             _context = new DbFunitureContext();
         }
 
         // GET: admin/Products
         public async Task<IActionResult> Index()
         {
+            if (_contextAccessor.HttpContext.Session.GetString("admin") != "admin")
+                return View("~/Areas/admin/Views/Login.cshtml");
             return View(await _context.Products.ToListAsync());
         }
 
