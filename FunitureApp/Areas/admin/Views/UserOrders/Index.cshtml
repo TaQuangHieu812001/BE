@@ -4,39 +4,39 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Đơn hàng</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Tạo đơn hàng</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Order.Order_no)
+                Mã đơn hàng
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User.Email)
+               Tài khoản
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Order.Total)
+               Giá
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Order.Status)
+                Tình trạng 
             </th>
          
             <th>
-                @Html.DisplayNameFor(model => model.Order.Delivery_free)
+               Miễn phí
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Order.Create_at)
+                Ngày tạo đơn hàng
             </th>
            
             <th>
-                @Html.DisplayNameFor(model => model.Order.PaymentStatus)
+                Tình trạng đơn hàng
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Order.PaymentType)
+                Hình thức thanh toán
             </th>
             <th></th>
         </tr>
@@ -69,12 +69,19 @@
                     @Html.DisplayFor(modelItem => item.Order.PaymentStatus)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Order.PaymentType)
+                    @if (item.Order.PaymentType == 0)
+                    {
+                    <span>Thanh toán qua thẻ ngân hàng</span>
+                     } 
+                    else {
+                     <span>Thanh toán trực tiếp</span>
+                    }
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Order.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Order.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Order.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Order.Id">Sửa</a> |
+
+
+                    <a asp-action="Delete" asp-route-id="@item.Order.Id">Xóa</a>
                 </td>
             </tr>
         }

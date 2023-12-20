@@ -27,7 +27,7 @@ namespace FunitureApp.Areas.admin.Controllers
         }
         [HttpPost]
         public IActionResult Login(string username,string password) {
-            if(username!=userAccount&& password != userPass)
+            if(username!=userAccount || password != userPass)
             {
                 TempData["msg"] = "Tài khoản hoặc mật khẩu không đúng";
                 return View("~/Areas/admin/Views/Login.cshtml");

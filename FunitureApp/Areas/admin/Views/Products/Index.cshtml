@@ -7,34 +7,33 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Thêm sản phẩm</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.NameProduct)
+                Tên sản phẩm
             </th>
 
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+               Hình ảnh
 
             </th>
 
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                Tình trạng
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Type)
+                Kiểu
+            <th>
+                Số lượng
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Create_at)
+                Ngày giờ
             </th>
 
-            <th></th>
+            <th>Chức năng</th>
         </tr>
     </thead>
     <tbody>
@@ -64,9 +63,9 @@
                 </td>
 
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                
+                    <a asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
                 </td>
             </tr>
         }

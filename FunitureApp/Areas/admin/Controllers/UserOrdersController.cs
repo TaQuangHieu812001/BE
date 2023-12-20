@@ -79,6 +79,7 @@ namespace FunitureApp.Areas.admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Order_no,User_id,Total,Status,Delivery_method_id,Delivery_free,Create_at,ShipId,PaymentStatus,PaymentType")] UserOrder userOrder)
         {
+           
             if (ModelState.IsValid)
             {
                 _context.Add(userOrder);
@@ -111,6 +112,7 @@ namespace FunitureApp.Areas.admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Order_no,User_id,Total,Status,Delivery_method_id,Delivery_free,Create_at,ShipId,PaymentStatus,PaymentType")] UserOrder userOrder)
         {
+            userOrder.Delivery_method_id = 0;
             if (id != userOrder.Id)
             {
                 return NotFound();
