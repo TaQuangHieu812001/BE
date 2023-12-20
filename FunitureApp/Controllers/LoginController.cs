@@ -37,10 +37,11 @@ namespace FunitureApp.Controllers
             try
             {
                 var isValidateEmail = new Validate();
+                var md5Pass = new MD5Hash();
                 var user = _userDbContext.Users.Where(u =>
                 u.Email == userLoginRequest.Email
                 &&
-                u.Password == userLoginRequest.Password).FirstOrDefault();
+                u.Password == md5Pass.Hash(userLoginRequest.Password)).FirstOrDefault();
                 if (!isValidateEmail.IsValidEmail(userLoginRequest.Email))
                 {
                     return Ok(
@@ -52,7 +53,7 @@ namespace FunitureApp.Controllers
                         );
                 }
 
-                if (user == null)//không đun
+                if (user == null)
                 {
                     return Ok(
                                new ApiResponse
@@ -64,7 +65,7 @@ namespace FunitureApp.Controllers
                 }
 
                 //
-                if (user.Password != userLoginRequest.Password)
+                if (user.Password != md5Pass.Hash(userLoginRequest.Password))
                 {
                     return Ok(
                                new ApiResponse
