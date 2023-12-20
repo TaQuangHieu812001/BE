@@ -402,3 +402,4 @@ FodyWeavers.xsd
 **/bin/Release/
 Debug/
 Release/
+FunitureApp/FunitureApp.csproj

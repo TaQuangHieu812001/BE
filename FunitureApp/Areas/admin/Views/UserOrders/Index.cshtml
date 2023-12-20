@@ -16,27 +16,26 @@
                 Mã đơn hàng
             </th>
             <th>
-               Tài khoản
+                Tài khoản
             </th>
             <th>
-               Giá
+                Giá
             </th>
             <th>
-                Tình trạng 
+                Tình trạng
             </th>
-         
-            <th>
-               Miễn phí
-            </th>
+
+
             <th>
                 Ngày tạo đơn hàng
             </th>
-           
-            <th>
-                Tình trạng đơn hàng
-            </th>
+
+
             <th>
                 Hình thức thanh toán
+            </th>
+            <th>
+                Địa chỉ
             </th>
             <th></th>
         </tr>
@@ -57,25 +56,27 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Order.Status)
                 </td>
-               
-                <td>
-                    @Html.DisplayFor(modelItem => item.Order.Delivery_free)
-                </td>
+
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Order.Create_at)
                 </td>
-               
-                <td>
-                    @Html.DisplayFor(modelItem => item.Order.PaymentStatus)
-                </td>
+
+
                 <td>
                     @if (item.Order.PaymentType == 0)
                     {
-                    <span>Thanh toán qua thẻ ngân hàng</span>
-                     } 
-                    else {
-                     <span>Thanh toán trực tiếp</span>
+                        <span>Thanh toán qua thẻ ngân hàng</span>
                     }
+                    else
+                    {
+                        <span>Thanh toán trực tiếp</span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address.Address) |
+                    @Html.DisplayFor(modelItem => item.Address.Name) |
+                    @Html.DisplayFor(modelItem => item.Address.PhoneNumber)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Order.Id">Sửa</a> |

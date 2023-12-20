@@ -37,10 +37,11 @@ namespace FunitureApp.Areas.admin.Controllers
                 var orderRes = new OrderView()
                 {
                     Order = o,
-                    User = _context.Users.Find(o.User_id)
+                    User = _context.Users.Find(o.User_id),
+                    Address = _context.UserAddresses.Find(o.ShipId)
                 };
-                
-                
+
+
                 response.Add(orderRes);
             }
 
@@ -79,7 +80,7 @@ namespace FunitureApp.Areas.admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Order_no,User_id,Total,Status,Delivery_method_id,Delivery_free,Create_at,ShipId,PaymentStatus,PaymentType")] UserOrder userOrder)
         {
-           
+
             if (ModelState.IsValid)
             {
                 _context.Add(userOrder);
