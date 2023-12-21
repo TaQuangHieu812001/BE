@@ -17,7 +17,7 @@ namespace FunitureApp.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Favorites> Favorites { get; set; }
         public DbSet<Comment> Comments { get; set; }
-
+        public DbSet<ProductImport> ProductImports { get; set; }
         private const string connectionString = "server=localhost;database=funitureapp;user=root;password=root; charset=utf8";
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -65,6 +65,10 @@ namespace FunitureApp.Data
                   entity.ToTable("user_order_items", "funitureapp")
 
               );
+            modelBuilder.Entity<ProductImport>(entity =>
+                entity.ToTable("product_import", "funitureapp")
+
+            );
 
         }
 

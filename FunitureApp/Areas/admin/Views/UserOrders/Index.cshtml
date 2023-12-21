@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<FunitureApp.Areas.admin.Models.OrderView>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "";
 }
 
 <h1>Đơn hàng</h1>
@@ -79,9 +79,10 @@
                     @Html.DisplayFor(modelItem => item.Address.PhoneNumber)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Order.Id">Sửa</a> |
-
-
+                    <a asp-action="Edit" asp-route-id="@item.Order.Id">Sửa</a>
+                    <br/>
+                    <a asp-action="Details" asp-route-id="@item.Order.Id">Chi tiết đơn hàng</a> 
+                      <br/>
                     <a asp-action="Delete" asp-route-id="@item.Order.Id">Xóa</a>
                 </td>
             </tr>

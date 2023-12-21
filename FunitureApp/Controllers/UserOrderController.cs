@@ -62,7 +62,6 @@ namespace FunitureApp.Controllers
                             product.ImageList = string.Join(",", productImages);
                         }
                         orderRes.orderItems.Add(new OrderItemResponse()
-
                         {
                             orderItem = item,
                             product = product,

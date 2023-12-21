@@ -63,8 +63,28 @@ namespace FunitureApp.Areas.admin.Controllers
             {
                 return NotFound();
             }
+            var model = new OrderResponse();
+            model.orderItems = new List<OrderItemResponse>();
+            var order = _context.UserOrders.Where(e => e.Id ==id).FirstOrDefault(); // laays tu db ra
 
-            return View(userOrder);
+            var orderItems = _context.UserOrderItems.Where(e => e.User_order_id == id).ToList();
+            foreach (var i in orderItems)
+            {
+         
+                var product_att = _context.ProductAttributes.Where(e => e.Id == i.Product_attr_id).FirstOrDefault();
+                var product = _context.Products.Where(e => e.Id == product_att.Product_id).FirstOrDefault();
+
+                var orderItemRes = new OrderItemResponse();
+                orderItemRes.productAttribute = product_att;
+                orderItemRes.product = product;
+
+                orderItemRes.orderItem = i;
+                model.orderItems.Add(orderItemRes);
+                
+            }
+            model.order = order;
+            
+            return View(model);
         }
 
         // GET: admin/UserOrders/Create

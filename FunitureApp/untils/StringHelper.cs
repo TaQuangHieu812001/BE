@@ -5,8 +5,8 @@ namespace FunitureApp.untils
 {
 	public class StringHelper
 	{
-		//public static string BaseUrl = "http://192.168.1.15:5000";
-        public static string BaseUrl = "http://172.20.10.4:5000";
+		public static string BaseUrl = "http://192.168.1.15:5000";
+        //public static string BaseUrl = "http://172.20.10.4:5000";
 
 
         public StringHelper()

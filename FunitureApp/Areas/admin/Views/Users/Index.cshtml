@@ -1,14 +1,12 @@
 ﻿@model IEnumerable<FunitureApp.Models.User>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "";
 }
 
-<h1>Dánh sách người dùng</h1>
+<h1>Danh sách người dùng</h1>
 
-<p>
-    <a asp-action="Create">Thêm người dùng</a>
-</p>
+
 <table class="table">
     <thead>
         <tr>
@@ -56,11 +54,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ModifiedBy)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
-              
-                <a asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
-            </td>
+       
         </tr>
 }
     </tbody>

@@ -58,7 +58,7 @@ namespace FunitureApp.Areas.admin.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+     
         public async Task<IActionResult> Create([Bind("Id,NameProduct,Category_id,Image,Desc,Status,Type,Quantity,Create_at,ImageList")] Product product)
         {
             product.Create_at = DateTime.Now;
