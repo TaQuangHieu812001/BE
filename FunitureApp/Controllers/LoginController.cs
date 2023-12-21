@@ -38,10 +38,11 @@ namespace FunitureApp.Controllers
             {
                 var isValidateEmail = new Validate();
                 var md5Pass = new MD5Hash();
+                var hash = md5Pass.Hash(userLoginRequest.Password);
                 var user = _userDbContext.Users.Where(u =>
                 u.Email == userLoginRequest.Email
                 &&
-                u.Password == md5Pass.Hash(userLoginRequest.Password)).FirstOrDefault();
+                u.Password == hash).FirstOrDefault();
                 if (!isValidateEmail.IsValidEmail(userLoginRequest.Email))
                 {
                     return Ok(

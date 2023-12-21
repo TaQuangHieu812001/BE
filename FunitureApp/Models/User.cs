@@ -15,5 +15,6 @@ namespace FunitureApp.Models
         public string CreateBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
         public string ModifiedBy { get; set; }
+        public string Refresh_token { get; set; }
     }
 }

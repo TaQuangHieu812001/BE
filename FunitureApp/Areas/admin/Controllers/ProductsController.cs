@@ -61,6 +61,7 @@ namespace FunitureApp.Areas.admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,NameProduct,Category_id,Image,Desc,Status,Type,Quantity,Create_at,ImageList")] Product product)
         {
+            product.Create_at = DateTime.Now;
             if (ModelState.IsValid)
             {
                 _context.Add(product);

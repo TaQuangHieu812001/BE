@@ -41,14 +41,26 @@ namespace FunitureApp.Controllers
             {
                 return BadRequest("Địa chỉ email không hợp lệ.");
             }
+            if (string.IsNullOrEmpty(registrationRequest.Password))
+            {
+                return BadRequest("Mật khẩu không được để trống");
+            }
             try
             {   //check user co ton tai
                 var existingUser = _userDbContext.Users.Where(u => u.Email == registrationRequest.Email);
 
                 if (existingUser.Count() > 0)
                 {
-                    return BadRequest("Người dùng đã tồn tại");
+                    return Ok(
+                         new ApiResponse
+                         {
+                             Success = false,
+                             Message = "Người dùng đã tồn tại",
+                             
+                         }
+                  ); ;
                 }
+
                  var md5Hash = new MD5Hash();
                     
                 var newUser = new User()
@@ -56,10 +68,7 @@ namespace FunitureApp.Controllers
                     UserName = registrationRequest.UserName,
                     Email = registrationRequest.Email,
                     Password = md5Hash.Hash(registrationRequest.Password),
-                };
-                await _userDbContext.Users.AddAsync(newUser);
-                await _userDbContext.SaveChangesAsync();
-                return Ok(
+                };   return Ok(
                            new ApiResponse
                            {
                                Success = true,
@@ -67,6 +76,9 @@ namespace FunitureApp.Controllers
                                Data = _generatorToken.GenerateToken(newUser),
                            }
                     ); ;
+                await _userDbContext.Users.AddAsync(newUser);
+                await _userDbContext.SaveChangesAsync();
+             
 
             }
             catch (Exception err)
