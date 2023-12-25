@@ -65,7 +65,7 @@ namespace FunitureApp.Areas.admin.Controllers
             }
             var model = new OrderResponse();
             model.orderItems = new List<OrderItemResponse>();
-            var order = _context.UserOrders.Where(e => e.Id ==id).FirstOrDefault(); // laays tu db ra
+            var order = _context.UserOrders.Where(e => e.Id ==id).FirstOrDefault(); // get  db
 
             var orderItems = _context.UserOrderItems.Where(e => e.User_order_id == id).ToList();
             foreach (var i in orderItems)
@@ -83,6 +83,7 @@ namespace FunitureApp.Areas.admin.Controllers
                 
             }
             model.order = order;
+            
             
             return View(model);
         }

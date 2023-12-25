@@ -53,7 +53,14 @@ namespace FunitureApp.Areas.admin.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> ListBoomOrder()
+        {
+            if (_contextAccessor.HttpContext.Session.GetString("admin") != "admin")
+                return View("~/Areas/admin/Views/Users/ListBoomOrder.cshtml");
+            return View(await _context.Users.Where(e => e.BoomOrder>0).ToListAsync());
 
+            return View();
+        }
         // POST: admin/Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.

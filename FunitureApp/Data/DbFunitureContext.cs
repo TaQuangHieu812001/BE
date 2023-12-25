@@ -16,7 +16,6 @@ namespace FunitureApp.Data
         public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Favorites> Favorites { get; set; }
-        public DbSet<Comment> Comments { get; set; }
         public DbSet<ProductImport> ProductImports { get; set; }
         private const string connectionString = "server=localhost;database=funitureapp;user=root;password=root; charset=utf8";
 
@@ -57,10 +56,7 @@ namespace FunitureApp.Data
                entity.ToTable("user_order", "funitureapp")
 
            );
-            modelBuilder.Entity<Comment>(entity =>
-                   entity.ToTable("comment", "funitureapp")
-
-               );
+     
             modelBuilder.Entity<UserOrderItem>(entity =>
                   entity.ToTable("user_order_items", "funitureapp")
 

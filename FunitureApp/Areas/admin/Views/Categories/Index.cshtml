@@ -1,28 +1,26 @@
 ﻿@model IEnumerable<FunitureApp.Models.Category>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "";
 }
 
-<h1>Index</h1>
+<h1>Danh mục sản phẩm</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Thêm danh mục sản phẩm</a>
 </p>
 <table class="table">
     <thead>
         <tr> 
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Tên danh mục
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
+               Hình ảnh
             </th>
+         
             <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Create_at)
+               Ngày tạo danh mục
             </th>
             <th></th>
         </tr>
@@ -37,16 +35,14 @@
                 <td>
                     <img src='@Html.DisplayFor(modelItem => item.Image)' width="100" />
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
-                </td>
+              
                 <td>
                     @Html.DisplayFor(modelItem => item.Create_at)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Chi tiết</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
                 </td>
             </tr>
         }

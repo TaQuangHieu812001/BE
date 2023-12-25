@@ -16,5 +16,6 @@ namespace FunitureApp.Models
         public DateTime? ModifiedOn { get; set; }
         public string ModifiedBy { get; set; }
         public string Refresh_token { get; set; }
+        public int? BoomOrder { get; set; }
     }
 }
