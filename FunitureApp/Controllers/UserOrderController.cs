@@ -4,11 +4,13 @@ using FunitureApp.Models.RequestModel;
 using FunitureApp.Models.ResponeModel;
 using FunitureApp.untils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -17,7 +19,7 @@ namespace FunitureApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    
+
     public class UserOrderController : Controller
     {
         private readonly DbFunitureContext _userOrderDbContext;
@@ -36,10 +38,10 @@ namespace FunitureApp.Controllers
             try
             {
                 var authUserId = Int32.Parse(HttpContext.User.Claims.Where(u => u.Type == "Id").FirstOrDefault().Value);
-                var userOrder = _userOrderDbContext.UserOrders.Where(uo => uo.User_id == authUserId && uo.Status==status).ToList();
+                var userOrder = _userOrderDbContext.UserOrders.Where(uo => uo.User_id == authUserId && uo.Status == status).ToList();
                 var response = new List<OrderResponse>();
-                
-               foreach(var o in userOrder)
+
+                foreach (var o in userOrder)
                 {
                     var orderRes = new OrderResponse()
                     {
@@ -47,7 +49,7 @@ namespace FunitureApp.Controllers
                         orderItems = new List<OrderItemResponse>()
                     };
                     var orderItem = _userOrderDbContext.UserOrderItems.AsNoTracking().Where(i => i.User_order_id == o.Id).ToList();
-                    foreach(var item in orderItem)
+                    foreach (var item in orderItem)
                     {
                         var productAttr = _userOrderDbContext.ProductAttributes.AsNoTracking().Where(p => p.Id == item.Product_attr_id).FirstOrDefault();
                         var product = _userOrderDbContext.Products.AsNoTracking().Where(p => p.Id == productAttr.Product_id).FirstOrDefault();
@@ -76,7 +78,8 @@ namespace FunitureApp.Controllers
                     Success = true,
                     Data = response,
                 });
-            } catch (Exception err)
+            }
+            catch (Exception err)
             {
                 return StatusCode(500, "Lỗi trong quá trình lấy đơn hàng: " + err.Message);
             }
@@ -103,7 +106,8 @@ namespace FunitureApp.Controllers
                                 Message = "Sản phẩm đã hết!"
                             });
                         }
-                        else {
+                        else
+                        {
                             product.Quantity -= o.count;
                             _userOrderDbContext.SaveChanges();
                         }
@@ -121,30 +125,31 @@ namespace FunitureApp.Controllers
                     ShipId = userOrder.shipId,
                     Status = "processing",
                     Total = userOrder.total,
-                    User_id = authUserId,Create_at=DateTime.Now,
-                    Order_no=DateTime.Now.Ticks.ToString()
+                    User_id = authUserId,
+                    Create_at = DateTime.Now,
+                    Order_no = DateTime.Now.Ticks.ToString()
                 };
                 _userOrderDbContext.UserOrders.Add(newOrder);
                 _userOrderDbContext.SaveChanges();
-                foreach(var o in userOrder.orderItem)
+                foreach (var o in userOrder.orderItem)
                 {
                     _userOrderDbContext.UserOrderItems.Add(new UserOrderItem
                     {
                         Product_attr_id = o.productAttribute.Id,
-                         Quantity=o.count,
-                          Total=(decimal)o.productAttribute.Price*o.count,
-                           User_order_id=newOrder.Id
-                           
+                        Quantity = o.count,
+                        Total = (decimal)o.productAttribute.Price * o.count,
+                        User_order_id = newOrder.Id
+
                     });
 
                 }
                 _userOrderDbContext.SaveChanges();
-               var strCallBack= HttpUtility.HtmlEncode(StringHelper.BaseUrl + "/api/UserOrder/payment-callback");
-                string paymentUrl = "http://192.168.1.11:80?callback="+ strCallBack + "&amount=" + userOrder.total.ToString()+ "&transId="+DateTime.Now.ToString("HHmmss")+"_"+newOrder.Id;
+                var strCallBack = HttpUtility.HtmlEncode(StringHelper.BaseUrl + "/api/UserOrder/payment-callback");
+                string paymentUrl = "http://192.168.1.11:80?callback=" + strCallBack + "&amount=" + userOrder.total.ToString() + "&transId=" + DateTime.Now.ToString("HHmmss") + "_" + newOrder.Id;
                 return Ok(new ApiResponse
                 {
                     Success = true,
-                    Data = userOrder.paymentType==0?paymentUrl: null,
+                    Data = userOrder.paymentType == 0 ? paymentUrl : null,
                 });
             }
             catch (Exception ex)
@@ -153,13 +158,13 @@ namespace FunitureApp.Controllers
             }
         }
 
-        
+
 
         [HttpPut("{orderId}")]
         [JwtAuthorize]
-        public async Task<IActionResult>UpdateUserOrder(int orderId, UserOrder updatedOrder)
+        public async Task<IActionResult> UpdateUserOrder(int orderId, UserOrder updatedOrder)
         {
-          try
+            try
             {
                 var existingOrder = await _userOrderDbContext.UserOrders
               .FirstOrDefaultAsync(uo => uo.Id == orderId);
@@ -174,18 +179,19 @@ namespace FunitureApp.Controllers
 
                 _userOrderDbContext.UserOrders.Update(existingOrder);
                 await _userOrderDbContext.SaveChangesAsync();
-                return Ok( 
-                    new ApiResponse 
-                {
-                    Success =true,
-                    Message = "Đơn hàng đã được cập nhật thành công",
+                return Ok(
+                    new ApiResponse
+                    {
+                        Success = true,
+                        Message = "Đơn hàng đã được cập nhật thành công",
                     }
                 );
 
-            }catch(Exception err)
+            }
+            catch (Exception err)
             {
-                return StatusCode(500, "Lỗi trong quá trình cập nhật đơn hàng "+err.Message);
-               
+                return StatusCode(500, "Lỗi trong quá trình cập nhật đơn hàng " + err.Message);
+
             }
 
         }
@@ -193,12 +199,12 @@ namespace FunitureApp.Controllers
 
         [HttpDelete("{orderId}")]
         [JwtAuthorize]
-        public async Task<IActionResult>RemoveUserOrder(int orderId)
+        public async Task<IActionResult> RemoveUserOrder(int orderId)
         {
             try
             {
                 var orderToDelete = await _userOrderDbContext.UserOrders.FindAsync(orderId);
-                 if(orderToDelete == null)
+                if (orderToDelete == null)
                 {
                     return NotFound("Không tìm thấy đơn hàng.");
                 }
@@ -210,22 +216,23 @@ namespace FunitureApp.Controllers
                     Message = "Xóa đơn hàng thành công",
                 });
             }
-            catch(Exception err){
+            catch (Exception err)
+            {
                 return StatusCode(500, "Lỗi trong quá trình xóa đơn hàng " + err.Message);
             }
         }
 
-        [JwtAuthorize(Type ="anonymous")]
+        [JwtAuthorize(Type = "anonymous")]
         [HttpGet("payment-callback")]
-        public async Task<IActionResult> CallBackPayment(string merTrxId,string resultCd,string resultMsg,string amount,string timeStamp,string trxId,string merId,string merchantToken)
+        public async Task<IActionResult> CallBackPayment(string merTrxId, string resultCd, string resultMsg, string amount, string timeStamp, string trxId, string merId, string merchantToken)
         {
             try
             {
-                
+
                 var hash = StringHelper.sha256(resultCd + timeStamp + merTrxId + trxId + merId + amount + CheckSumKey);
                 if (hash == merchantToken)
                 {
-                    if(resultCd== "00_000")
+                    if (resultCd == "00_000")
                     {
                         var orderId = Int32.Parse(merTrxId.Split("_")[1]);
                         var order = await _userOrderDbContext.UserOrders.Where(u => u.Id == orderId).FirstOrDefaultAsync();
@@ -237,18 +244,87 @@ namespace FunitureApp.Controllers
                         }
                         else return Ok(new ApiResponse(false, "Không tìm thấy đơn hàng", null));
                     }
-                   else return Ok(new ApiResponse(false, "Lỗi giao dich "+ resultMsg, null));
+                    else return Ok(new ApiResponse(false, "Lỗi giao dich " + resultMsg, null));
 
                 }
                 else return Ok(new ApiResponse(false, "Lỗi checksum ", null));
-                
-            }catch(Exception e) 
+
+            }
+            catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
         }
 
+        [HttpPost("payment-banking-upload")]
+        [JwtAuthorize]
+        public async Task<IActionResult> UploadBankingImage([FromForm] List<IFormFile> files)
+        {
+            try
+            {
+                if (files.Any())
+                    if (files[0].Length > 0)
+                    {
+                        var result = new List<string>();
+                        foreach (var file in files)
+                        {
+                            var ext = Path.GetExtension(file.FileName);
+                            var absoluteDir = Directory.GetCurrentDirectory();
+                            var hostName = Request.Host;
+                            var relativeDir = "/images/" +
+                        Guid.NewGuid() + Path.GetExtension(file.FileName);
+                            var filePath = absoluteDir + "/wwwroot" + relativeDir;
+                            //savefile
+                            //var resultf = await _fileService.SaveFile(filePath, files[0], relativeDir);
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+                            result.Add(relativeDir);
+                        }
+                        return Ok(new ApiResponse(true, "", result));
+                    }
+                return Ok(new ApiResponse(false, "Không có ảnh", null));
+            }
+            catch (Exception err)
+            {
+                return Ok(new ApiResponse(false, err.Message, null));
+            }
+
+
+
+        }
+
+        [HttpPost("payment-banking-update")]
+        [JwtAuthorize]
+        public async Task<IActionResult> EditBankingImage(string imageUrl, int? idOrder)
+        {
+            try
+            {
+                var authUserId = Int32.Parse(HttpContext.User.Claims.Where(u => u.Type == "Id").FirstOrDefault().Value);
+                var order = await _userOrderDbContext.UserOrders.Where(u => u.Id == idOrder).FirstOrDefaultAsync();
+                if (order == null)
+                {
+                    return Ok(new ApiResponse(false, "Không tìm thấy đơn hàng", null));
+                }
+                if (authUserId != order.User_id)
+                {
+                    return Ok(new ApiResponse(false, "Bạn không có quyền sửa ảnh", null));
+                }
+                order.BankingImage = imageUrl;
+                await _userOrderDbContext.SaveChangesAsync();
+                return Ok(new ApiResponse(false, "Không có ảnh", null));
+            }
+            catch (Exception err)
+            {
+                return Ok(new ApiResponse(false, err.Message, null));
+            }
+
+
+
+        }
+
     }
 
 }
-  
+

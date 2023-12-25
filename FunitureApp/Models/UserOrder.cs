@@ -30,6 +30,7 @@ namespace FunitureApp.Models
         /// 0:atm; 1: cash
         /// </summary>
         public int? PaymentType { get; set; }
+        public string BankingImage { get; set; }
 
     }
 }
