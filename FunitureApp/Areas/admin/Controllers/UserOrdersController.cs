@@ -25,11 +25,27 @@ namespace FunitureApp.Areas.admin.Controllers
         }
 
         // GET: admin/UserOrders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? paymentType, int? paymentStatus,string orderStatus)
         {
             if (_contextAccessor.HttpContext.Session.GetString("admin") != "admin")
                 return View("~/Areas/admin/Views/Login.cshtml");
-            var userOrder = await _context.UserOrders.ToListAsync();
+            var userOrderQuery =  _context.UserOrders.Where(e=>true);
+            if (paymentType != null)
+            {
+                userOrderQuery = userOrderQuery.Where(e => e.PaymentType == paymentType);
+
+            }
+            if (paymentStatus != null)
+            {
+                userOrderQuery = userOrderQuery.Where(e => e.PaymentStatus == paymentStatus);
+
+            }
+            if (!string.IsNullOrEmpty(orderStatus))
+            {
+                userOrderQuery = userOrderQuery.Where(e => e.Status == orderStatus);
+
+            }
+            var userOrder = await userOrderQuery.ToListAsync();
             var response = new List<OrderView>();
 
             foreach (var o in userOrder)
@@ -132,7 +148,7 @@ namespace FunitureApp.Areas.admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Order_no,User_id,Total,Status,Delivery_method_id,Delivery_free,Create_at,ShipId,PaymentStatus,PaymentType")] UserOrder userOrder)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Order_no,User_id,Total,Status,Delivery_method_id,Delivery_free,Create_at,ShipId,PaymentStatus,PaymentType,BankingImage")] UserOrder userOrder)
         {
             userOrder.Delivery_method_id = 0;
             if (id != userOrder.Id)

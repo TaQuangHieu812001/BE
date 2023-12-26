@@ -149,7 +149,7 @@ namespace FunitureApp.Controllers
                 return Ok(new ApiResponse
                 {
                     Success = true,
-                    Data = userOrder.paymentType == 0 ? paymentUrl : null,
+                    Data = newOrder,
                 });
             }
             catch (Exception ex)
@@ -272,7 +272,7 @@ namespace FunitureApp.Controllers
                             var absoluteDir = Directory.GetCurrentDirectory();
                             var hostName = Request.Host;
                             var relativeDir = "/images/" +
-                        Guid.NewGuid() + Path.GetExtension(file.FileName);
+                        Guid.NewGuid() + (string.IsNullOrEmpty(ext)?".jpg":ext) ;
                             var filePath = absoluteDir + "/wwwroot" + relativeDir;
                             //savefile
                             //var resultf = await _fileService.SaveFile(filePath, files[0], relativeDir);
@@ -297,7 +297,7 @@ namespace FunitureApp.Controllers
 
         [HttpPost("payment-banking-update")]
         [JwtAuthorize]
-        public async Task<IActionResult> EditBankingImage(string imageUrl, int? idOrder)
+        public async Task<IActionResult> EditBankingImage([FromBody]string imageUrl, [FromQuery]int? idOrder)
         {
             try
             {

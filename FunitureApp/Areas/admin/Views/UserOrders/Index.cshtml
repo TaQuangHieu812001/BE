@@ -9,6 +9,25 @@
 <p>
     <a asp-action="Create">Tạo đơn hàng</a>
 </p>
+<form action="/admin/userorders">
+    <select name="paymentType">
+        <option value="">Tất cả</option>
+        <option value="0">Chuyển khoản</option>
+        <option value="1">Tiền mặt</option>
+    </select>
+    <select name="paymentStatus">
+        <option value="">Tất cả</option>
+        <option value="0">Chưa trả</option>
+        <option value="1">Đã trả</option>
+    </select>
+    <select name="orderStatus">
+        <option value="">Tất cả</option>
+        <option value="processing">Chưa trả</option>
+        <option value="delivered">Thành công</option>
+        <option value="canceled">Đã hủy</option>
+    </select>
+    <input type="submit" value="Tìm kiếm" />
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -22,10 +41,12 @@
                 Giá
             </th>
             <th>
-                Tình trạng
+                Tình trạng đơn hàng
             </th>
 
-
+            <th>
+                Tình trạng thanh toán
+            </th>
             <th>
                 Ngày tạo đơn hàng
             </th>
@@ -57,7 +78,17 @@
                     @Html.DisplayFor(modelItem => item.Order.Status)
                 </td>
 
+                <td>
+                    @if (item.Order.PaymentStatus == 0)
+                    {
 
+                        <span>Chưa thanh toán</span>
+                    }
+                    else
+                    {
+                        <span>Đã thanh toán</span>
+                    }
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Order.Create_at)
                 </td>
@@ -66,7 +97,7 @@
                 <td>
                     @if (item.Order.PaymentType == 0)
                     {
-                        <span>Thanh toán qua thẻ ngân hàng</span>
+                        <span>Thanh toán chuyển khoản</span>
                     }
                     else
                     {

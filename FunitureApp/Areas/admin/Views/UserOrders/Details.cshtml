@@ -17,6 +17,16 @@
             @Html.DisplayFor(model => model.order.Order_no)
         </dd>
         <dt class="col-sm-2">
+            Ảnh chuyển khoản
+        </dt>
+        <dd class="col-sm-10">
+            <img
+                 width="100"
+                 src="@Model.order.BankingImage"
+                 />
+            
+        </dd>
+        <dt class="col-sm-2">
             Mã người dùng
         <dd class="col-sm-10">
             @{
@@ -54,12 +64,12 @@
             @Model.order.Create_at.Value.ToString("MM/dd/yyyy hh:mm:ss tt")
         </dd>
         <dt class="col-sm-2">
-           Hình ảnh sản phẩm
+            Hình ảnh sản phẩm
         </dt>
         <dd class="col-sm-10">
-            @foreach(var i in Model.orderItems)
+            @foreach (var i in Model.orderItems)
             {
-                <image src ="@i.product.Image"></image>
+                <image src="@i.product.Image"></image>
             }
         </dd>
 
