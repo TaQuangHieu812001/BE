@@ -60,10 +60,10 @@
             </div>
             <div class="form-group">
                 <span>Số lượng</span>
-                <input asp-for="Quantity" readonly class="form-control" />
+                <input asp-for="Quantity" readonly="true" class="form-control" />
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group d-none">
                 <span>Ngày tạo</span>
                 <input asp-for="Create_at" readonly class="form-control" />
                 <span asp-validation-for="Create_at" class="text-danger"></span>
