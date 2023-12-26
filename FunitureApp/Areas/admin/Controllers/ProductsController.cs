@@ -75,14 +75,14 @@ namespace FunitureApp.Areas.admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
      
-        public async Task<IActionResult> Create([Bind("NameProduct,Category_id,Image,Desc,Status,Quantity,Create_at,ImageList")] Product product)
+        public async Task<IActionResult> Create([Bind("NameProduct,Category_id,Image,Desc,Status,Type,Quantity,Create_at,ImageList")] Product product)
         {
             product.Create_at = DateTime.Now;
             if (ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Edit", new { id = product.Id });
             }
             return View(product);
         }

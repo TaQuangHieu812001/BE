@@ -57,7 +57,7 @@
 
             <div class="form-group">
                 <label class="control-label">Danh sách ảnh</label>
-                <input asp-for="ImageList" class="form-control" />
+                <input asp-for="ImageList" id="txtMultiple" class="form-control d-none" />
                 <span asp-validation-for="ImageList" class="text-danger"></span>
               
                 <input type="file" multiple id="thumbMultiple" />
