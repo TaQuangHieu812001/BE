@@ -30,7 +30,7 @@ namespace FunitureApp.Controllers
             {
                 var categories = _categoryDbContext.Categories.ToList();
                 int categoriesCount = categories.Count;
-                for(int i = 0; i< categoriesCount; i++)
+                for (int i = 0; i < categoriesCount; i++)
                 {
                     var category = categories[i];
                     if (!string.IsNullOrEmpty(category.Image))
@@ -49,7 +49,7 @@ namespace FunitureApp.Controllers
             }
             catch (Exception err)
             {
-                return StatusCode(500, "Lỗi máy chủ: " + err.Message);  
+                return StatusCode(500, "Lỗi máy chủ: " + err.Message);
             }
 
         }

@@ -56,19 +56,20 @@ namespace FunitureApp.Controllers
                          {
                              Success = false,
                              Message = "Người dùng đã tồn tại",
-                             
+
                          }
                   ); ;
                 }
 
-                 var md5Hash = new MD5Hash();
-                    
+                var md5Hash = new MD5Hash();
+
                 var newUser = new User()
                 {
                     UserName = registrationRequest.UserName,
                     Email = registrationRequest.Email,
                     Password = md5Hash.Hash(registrationRequest.Password),
-                };   return Ok(
+                    CreateOn = DateTime.Now
+                }; return Ok(
                            new ApiResponse
                            {
                                Success = true,
@@ -78,7 +79,7 @@ namespace FunitureApp.Controllers
                     ); ;
                 await _userDbContext.Users.AddAsync(newUser);
                 await _userDbContext.SaveChangesAsync();
-             
+
 
             }
             catch (Exception err)

@@ -13,7 +13,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                 <span>Tên sản phẩm</span>
+                <span>Tên sản phẩm</span>
                 <input asp-for="NameProduct" class="form-control" />
                 <span asp-validation-for="NameProduct" class="text-danger"></span>
             </div>
@@ -51,8 +51,8 @@
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
-               <span>Ngày tạo</span>
-                <input asp-for="Create_at" class="form-control" />
+                <span>Ngày tạo</span>
+                <input asp-for="Create_at" disabled class="form-control" />
                 <span asp-validation-for="Create_at" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -139,7 +139,7 @@
                 <div class="btn btn-info" id="btnSaveInv">
                     Lưu
                 </div>
-               
+
             </div>
             <div>
                 <br />
@@ -189,19 +189,19 @@
             for (let resAttribute in resAttributes.data) {
                 var tr = document.createElement('tr');
                 tr.innerHTML = `
-                     <td>${resAttributes.data[resAttribute].id}</td>
-                     <td>${resAttributes.data[resAttribute].price}</td>
-                     <td>${resAttributes.data[resAttribute].color}</td>
-                     <td>
-                    <div style="width:20px;height:20px; background-color:${resAttributes.data[resAttribute].hexColor}">
-                    </div>
-                    </td>
+                             <td>${resAttributes.data[resAttribute].id}</td>
+                             <td>${resAttributes.data[resAttribute].price}</td>
+                             <td>${resAttributes.data[resAttribute].color}</td>
+                             <td>
+                            <div style="width:20px;height:20px; background-color:${resAttributes.data[resAttribute].hexColor}">
+                            </div>
+                            </td>
 
-                     <td>
+                             <td>
 
-                     <button type="button" class="btn btn-sm btn-danger" onclick="deleteAttribute(${resAttributes.data[resAttribute].id})">Xóa</button>
-                     </td>
-                                                                                    `;
+                             <button type="button" class="btn btn-sm btn-danger" onclick="deleteAttribute(${resAttributes.data[resAttribute].id})">Xóa</button>
+                             </td>
+                                                                                            `;
                 document.getElementById('tableAttributes').appendChild(tr);
             }
         }
@@ -228,6 +228,9 @@
             for (let cate in resCategory.data) {
                 var option = document.createElement('option');
                 option.value = resCategory.data[cate].id;
+                if (resCategory.data[cate].id == @Model.Category_id) {
+                    option.selected = 'selected';
+                }
                 option.innerHTML = resCategory.data[cate].name;
                 document.getElementById('optCategories').appendChild(option);
             }
@@ -239,36 +242,35 @@
             for (let i in resInv.data) {
                 var tr = document.createElement('tr');
                 tr.innerHTML = `
-                     <td>${resInv.data[i].id}</td>
-                     <td>${resInv.data[i].quantity}</td>
-                     <td>${resInv.data[i].create_at}</td>
-                     
-                    <td>${resInv.data[i].isImported == 0 ? "Chờ nhập" : "Đã nhập"}</td>
-                    ${
-                    resInv.data[i].isImported == 0 ? `<td>
-                     <button type="button" class="btn btn-sm btn-danger" onclick="importInv(${resInv.data[i].id})">Lên hệ thống</button>
-                     </td>`:""
+                             <td>${resInv.data[i].id}</td>
+                             <td>${resInv.data[i].quantity}</td>
+                             <td>${resInv.data[i].create_at}</td>
+
+                            <td>${resInv.data[i].isImported == 0 ? "Chờ nhập" : "Đã nhập"}</td>
+                            ${resInv.data[i].isImported == 0 ? `<td>
+                             <button type="button" class="btn btn-sm btn-danger" onclick="importInv(${resInv.data[i].id})">Lên hệ thống</button>
+                             </td>`: ""
                     }
-                       `;
+                               `;
                 document.getElementById('tableInv').appendChild(tr);
             }
         }
 
         async function addInv() {
-               var data = new FormData();
+            var data = new FormData();
             data.append("product_id", "@Model.Id");
             data.append("quantity", document.getElementById("txtAmountInv").value);
 
             var resUpload = await axios.post("/api/productimport/", data)
             console.log(resUpload);
             if (resUpload.status == 200) {
-               
+
 
                 getInventory();
             }
         }
-        async function importInv(id){
-            var resCategory = await axios.get("/api/productimport/import?id="+id);
+        async function importInv(id) {
+            var resCategory = await axios.get("/api/productimport/import?id=" + id);
             console.log(resCategory);
             location.reload()
         }
