@@ -189,19 +189,19 @@
             for (let resAttribute in resAttributes.data) {
                 var tr = document.createElement('tr');
                 tr.innerHTML = `
-                             <td>${resAttributes.data[resAttribute].id}</td>
-                             <td>${resAttributes.data[resAttribute].price}</td>
-                             <td>${resAttributes.data[resAttribute].color}</td>
-                             <td>
-                            <div style="width:20px;height:20px; background-color:${resAttributes.data[resAttribute].hexColor}">
-                            </div>
-                            </td>
+                                 <td>${resAttributes.data[resAttribute].id}</td>
+                                 <td>${resAttributes.data[resAttribute].price}</td>
+                                 <td>${resAttributes.data[resAttribute].color}</td>
+                                 <td>
+                                <div style="width:20px;height:20px; background-color:${resAttributes.data[resAttribute].hexColor}">
+                                </div>
+                                </td>
 
-                             <td>
+                                 <td>
 
-                             <button type="button" class="btn btn-sm btn-danger" onclick="deleteAttribute(${resAttributes.data[resAttribute].id})">Xóa</button>
-                             </td>
-                                                                                            `;
+                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteAttribute(${resAttributes.data[resAttribute].id})">Xóa</button>
+                                 </td>
+                                                                                                `;
                 document.getElementById('tableAttributes').appendChild(tr);
             }
         }
@@ -242,16 +242,16 @@
             for (let i in resInv.data) {
                 var tr = document.createElement('tr');
                 tr.innerHTML = `
-                             <td>${resInv.data[i].id}</td>
-                             <td>${resInv.data[i].quantity}</td>
-                             <td>${resInv.data[i].create_at}</td>
+                                 <td>${resInv.data[i].id}</td>
+                                 <td>${resInv.data[i].quantity}</td>
+                                 <td>${resInv.data[i].create_at}</td>
 
-                            <td>${resInv.data[i].isImported == 0 ? "Chờ nhập" : "Đã nhập"}</td>
-                            ${resInv.data[i].isImported == 0 ? `<td>
-                             <button type="button" class="btn btn-sm btn-danger" onclick="importInv(${resInv.data[i].id})">Lên hệ thống</button>
-                             </td>`: ""
+                                <td>${resInv.data[i].isImported == 0 ? "Chờ nhập" : "Đã nhập"}</td>
+                                ${resInv.data[i].isImported == 0 ? `<td>
+                                 <button type="button" class="btn btn-sm btn-danger" onclick="importInv(${resInv.data[i].id})">Lên hệ thống</button>
+                                 </td>`: ""
                     }
-                               `;
+                                   `;
                 document.getElementById('tableInv').appendChild(tr);
             }
         }

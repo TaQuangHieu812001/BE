@@ -127,12 +127,12 @@ namespace FunitureApp.Controllers
                
                 p.Product = product;
                 p.ProductAttribute = productAttribute.ToList();
-                if (_productDbContext.Comments.Where(c => c.Product_id == id).Count() > 0)
-                {
-                    p.AvgStar = (decimal)_productDbContext.Comments.Where(c => c.Product_id == id).Average(a => a.Star_rate);
-                    p.TotalComment = _productDbContext.Comments.Where(c => c.Product_id == id).Count();
-                }
-                else { p.AvgStar = 0; p.TotalComment = 0; }
+                //if (_productDbContext.Comments.Where(c => c.Product_id == id).Count() > 0)
+               // {
+               //     p.AvgStar = (decimal)_productDbContext.Comments.Where(c => c.Product_id == id).Average(a => a.Star_rate);
+               //     p.TotalComment = _productDbContext.Comments.Where(c => c.Product_id == id).Count();
+              ///  }
+//else { p.AvgStar = 0; p.TotalComment = 0; }
                 return Ok(
                         new ApiResponse
                         {
