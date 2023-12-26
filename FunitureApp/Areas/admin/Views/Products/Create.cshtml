@@ -4,67 +4,225 @@
     ViewData["Title"] = "";
 }
 
-<h1>Thêm sản phẩm</h1>
-
+<h1>Sửa thông tin sản phẩm</h1>
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label class="control-label">Tên sản phẩm</label>
+                <span>Tên sản phẩm</span>
                 <input asp-for="NameProduct" class="form-control" />
                 <span asp-validation-for="NameProduct" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Mã danh mục</label>
-                <input asp-for="Category_id" class="form-control" />
+                <span>Loại sản phẩm</span>
+                <select id="optCategories" asp-for="Category_id" class="form-control">
+                </select>
                 <span asp-validation-for="Category_id" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Hình ảnh</label>
-                <input asp-for="Image" class="form-control" />
+
+                <input asp-for="Image" class="form-control d-none" id="txtThumb" />
+                <img  class="img-thumbnail" style="width: 100px; height: 100px;" />
+                <input type="file" id="thumpNail">
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
-
             <div class="form-group">
-                <label  class="control-label">Mô tả</label>
+                <span>Mô tả</span>
                 <input asp-for="Desc" class="form-control" />
                 <span asp-validation-for="Desc" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Tình trạng</label>
-                <input asp-for="Status" class="form-control" />
+                <span>Status</span>
+                <select name="Status" class="form-control">
+                    <option value="Show">Hiện</option>
+                    <option value="hide">Ẩn</option>
+                </select>
+               
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Type" class="control-label"></label>
+            <div class="form-group d-none">
+                <span>Kiểu</span>
                 <input asp-for="Type" class="form-control" />
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Số lượng</label>
-                <input asp-for="Quantity" class="form-control" />
+                <span>Số lượng</span>
+                <input asp-for="Quantity"  class="form-control" />
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
-            
+            <div class="form-group d-none">
+                <span>Ngày tạo</span>
+                <input asp-for="Create_at"  class="form-control" />
+                <span asp-validation-for="Create_at" class="text-danger"></span>
+            </div> 
             <div class="form-group">
-                <label  class="control-label">Danh sách ảnh</label>
-                <input asp-for="ImageList" class="form-control" />
+
+                <input asp-for="ImageList" class="form-control d-none" id="txtMultiple" />
                 <span asp-validation-for="ImageList" class="text-danger"></span>
+              
+                <input type="file" multiple id="thumbMultiple" />
             </div>
             <div class="form-group">
-                <input type="submit" value="Thêm sản phẩm" class="btn btn-primary" />
+                <input type="submit" value="Lưu" class="btn btn-primary" />
             </div>
         </form>
     </div>
-</div>
+ @*    <div class="col-md-5 ">
+        <div>
+            <div class="d-flex justify-content-between flex-row">
+                <h4>Thuộc tính</h4>
+                <div class="btn btn-success" id="btnAdd">Thêm thuộc tính</div>
 
+            </div>
+            <br />
+            <div>
+                <table class="table">
+                    <tr>
+                        <th>Id</th>
+                        <th>Giá</th>
+                        <th>Màu</th>
+                        <th>Mã màu</th>
+
+                    </tr>
+                    <tbody id="tableAttributes">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal fade" data-bs-backdrop="static" id="modalAssets" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content overflow-hidden">
+                        <div class="modal-body p-2">
+                            <h5>
+                                Thêm thuộc tính
+                            </h5>
+                            <div class="form-group">
+                                <label class="control-label">
+                                    Giá tiền
+                                </label>
+                                <input type="number" class="form-control" id="txtPrice" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">
+                                    Màu
+                                </label>
+                                <input type="text" class="form-control" id="txtColor" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">
+                                    Mã màu
+                                </label>
+                                <input type="color" class="" id="txtHexColor" />
+                            </div>
+                            <div class="btn btn-success" id="btnSaveAttribute">
+                                Lưu
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="d-flex justify-content-between flex-row">
+                <h4>Kho nhập hàng</h4>
+                <div class="btn btn-success" id="btnAddInv">Nhập kho</div>
+
+            </div>
+            <div id="frmAddInv" style="display:none">
+                <input type="number" class="form-control" id="txtAmountInv" />
+                <br />
+                <div class="btn btn-info" id="btnSaveInv">
+                    Lưu
+                </div>
+
+            </div>
+            <div>
+                <br />
+                <table class="table">
+                    <tr>
+                        <th>Id</th>
+                        <th>Số lượng</th>
+                        <th>Ngày nhập</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                    <tbody id="tableInv">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> *@
+</div>
 <div>
     <a asp-action="Index">Quay lại</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        async function UploadImage(targetType, target) {
+            var fileInput = document.getElementById(target);
+            var files = fileInput.files;
+            var data = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                data.append("files", files[i]);
+            }
+
+            var resUpload = await axios.post("/admin/products/UploadAssets", data)
+            console.log(resUpload);
+            if (resUpload.status == 200) {
+                if (targetType == 'multiple') {
+                    document.getElementById("txtMultiple").value = resUpload.data.join(',');
+                }
+                else
+                    document.getElementById("txtThumb").value = resUpload.data[0];
+            }
+        }
+     
+       
+        async function getCategory() {
+            var resCategory = await axios.get("/admin/products/getCategory");
+            console.log(resCategory);
+
+            for (let cate in resCategory.data) {
+                var option = document.createElement('option');
+                option.value = resCategory.data[cate].id;
+               
+                option.innerHTML = resCategory.data[cate].name;
+                document.getElementById('optCategories').appendChild(option);
+            }
+        }
+     
+
+   
+        async function importInv(id) {
+            var resCategory = await axios.get("/api/productimport/import?id=" + id);
+            console.log(resCategory);
+            location.reload()
+        }
+        $(function () {
+            $("#thumpNail").change(() => UploadImage('', 'thumpNail'));
+            $("#thumbMultiple").change(() => UploadImage('multiple', 'thumbMultiple'));
+            $("#btnAdd").click(() => {
+                $('#modalAssets').modal('show')
+            });
+            $("#btnSaveInv").click(() => {
+                addInv()
+            });
+            $("#btnAddInv").click(() => {
+                $('#frmAddInv').toggle();
+            })
+            $("#btnSaveAttribute").click(() => {
+                $('#modalAssets').modal('hide');
+                SaveAttribute();
+            })
+         
+            getCategory();
+           
+        })
+
+    </script>
+   
 }

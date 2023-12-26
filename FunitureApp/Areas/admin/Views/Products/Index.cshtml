@@ -24,7 +24,7 @@
             </th>
 
             <th>
-                Tình trạng
+                Trạng thái
             </th>
             <th>
                 Kiểu
@@ -52,7 +52,14 @@
                 </td>
 
                 <td>
-                    @Html.DisplayFor(modelItem => item.Status)
+                    @if (item.Status == "Show")
+                    {
+                        <span>Hiện</span>
+                    }
+                    else
+                    {
+                        <span>Ẩn</span>
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Type)

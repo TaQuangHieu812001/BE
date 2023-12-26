@@ -27,7 +27,23 @@ namespace FunitureApp.Areas.admin.Controllers
         {
             if (_contextAccessor.HttpContext.Session.GetString("admin") != "admin")
                 return View("~/Areas/admin/Views/Login.cshtml");
-            return View(await _context.Products.ToListAsync());
+            var data = from p in _context.Products
+                       join cate in _context.Categories on p.Category_id equals cate.Id
+                       select new Product
+                       {
+                           Id = p.Id,
+                           Category_id = cate.Id,
+                           Create_at = p.Create_at,
+                           Desc = p.Desc,
+                           Image = p.Image,
+                           ImageList = p.ImageList,
+                           NameProduct = p.NameProduct,
+                           Quantity = p.Quantity,
+                           Status = p.Status,
+                           Type = cate.Name
+
+                       };
+            return View(await data.ToListAsync());
         }
 
         // GET: admin/Products/Details/5
@@ -53,13 +69,13 @@ namespace FunitureApp.Areas.admin.Controllers
         {
             return View();
         }
-
+         
         // POST: admin/Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
      
-        public async Task<IActionResult> Create([Bind("Id,NameProduct,Category_id,Image,Desc,Status,Type,Quantity,Create_at,ImageList")] Product product)
+        public async Task<IActionResult> Create([Bind("NameProduct,Category_id,Image,Desc,Status,Quantity,Create_at,ImageList")] Product product)
         {
             product.Create_at = DateTime.Now;
             if (ModelState.IsValid)

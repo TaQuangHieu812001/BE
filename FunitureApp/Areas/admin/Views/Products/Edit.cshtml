@@ -36,23 +36,36 @@
                 <span asp-validation-for="Desc" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <span>Tình trạng</span>
-                <input asp-for="Status" class="form-control" />
+                <span>Trạng thái</span>
+                <select name="Status" class="form-control"> 
+                    @if(Model.Status == "Show") {
+                        <option value="Show" selected>Hiện</option>
+                        <option value="Hide" >Ẩn</option>
+                    }
+                    else{
+                    <option value="Show" >Hiện</option>
+                    <option value="Hide" selected>Ẩn</option>
+                
+                    }
+
+                   
+                </select>
+             
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group d-none">
                 <span>Kiểu</span>
                 <input asp-for="Type" class="form-control" />
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <span>Số lượng</span>
-                <input asp-for="Quantity" disabled class="form-control" />
+                <input asp-for="Quantity" readonly class="form-control" />
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <span>Ngày tạo</span>
-                <input asp-for="Create_at" disabled class="form-control" />
+                <input asp-for="Create_at" readonly class="form-control" />
                 <span asp-validation-for="Create_at" class="text-danger"></span>
             </div>
             <div class="form-group">
